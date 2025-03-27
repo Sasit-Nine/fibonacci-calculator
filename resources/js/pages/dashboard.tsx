@@ -7,6 +7,7 @@ import { Head, usePage } from "@inertiajs/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: "Dashboard",
@@ -20,9 +21,14 @@ export default function Dashboard() {
     const [redisData,setRedisData] = useState(null)
     const [fiboNumber,setFiboNumber] = useState()
     const [errMessage,setErrMessage] = useState("")
+    
     const fetchResult = async () => {
         try {
-            const response = await axios.get(`/api/fibonacci/result/${auth?.user?.id}`);
+            const response = await axios.get(`/api/fibonacci/result/${auth?.user?.id}`,{
+                headers: {
+                    Authorization: `Bearer ${auth?.token}`
+                }
+            });
             setMySQLData(response.data.MySQL)
             setRedisData(response.data.RedisData);
         } catch (error) {
@@ -32,7 +38,11 @@ export default function Dashboard() {
     const pollResult = () => {
         const interval = setInterval(async () => {
             try {
-                const response = await axios.get(`/api/fibonacci/result/${auth?.user?.id}`);
+                const response = await axios.get(`/api/fibonacci/result/${auth?.user?.id}`,{
+                    headers: {
+                        Authorization: `Bearer ${auth?.token}`
+                    }
+                });
                 setMySQLData(response.data.MySQL);
                 setRedisData(response.data.RedisData);
 
@@ -61,10 +71,17 @@ export default function Dashboard() {
 
     const handleSubmit = async (index) => {
         try {
-            const response = await axios.post(`/api/fibonacci/calculate`,{
-                index: index,
-                user_id: auth?.user?.id
-            });
+            const response = await axios.post(`/api/fibonacci/calculate`,
+                {
+                    index: index,
+                    user_id: auth?.user?.id
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${auth?.token}`
+                    }
+                }
+            );
             console.log(response)
             if(response.data.message==="You have already submitted this index." || response.data.message==="Fibonacci calculation started."){
                 setErrMessage(response.data.message)
@@ -74,9 +91,6 @@ export default function Dashboard() {
             console.error("Error Sending Fibonacci :", error);
         }
     }
-    console.log(mysqlData)
-    console.log(redisData)
-    console.log(auth);
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />

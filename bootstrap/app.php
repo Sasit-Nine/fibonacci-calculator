@@ -15,8 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->encryptCookies(except: ['appearance']);
-
+        // $middleware->statefulApi();
+        $middleware->encryptCookies(except: ['appearance','token']);
         $middleware->web(append: [
             HandleAppearance::class,
             HandleInertiaRequests::class,
