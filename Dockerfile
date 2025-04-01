@@ -18,7 +18,7 @@ RUN apk update && apk add --no-cache \
     curl-dev \
     libev-dev \
     redis \
-    gmp-dev \  
+    gmp-dev \
     && apk add --no-cache --virtual .build-deps \
     libtool \
     autoconf \
@@ -33,7 +33,7 @@ RUN docker-php-ext-install -j$(nproc) zip \
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-ext-install -j$(nproc) pdo_mysql \
     && docker-php-ext-install -j$(nproc) bcmath \
-    && docker-php-ext-install -j$(nproc) gmp \  
+    && docker-php-ext-install -j$(nproc) gmp \
     && docker-php-ext-install -j$(nproc) mysqli \
     && docker-php-ext-install -j$(nproc) exif \
     && docker-php-ext-install -j$(nproc) pcntl \
@@ -46,18 +46,14 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-COPY composer.* ./
-
-RUN composer install --no-ansi --no-dev --no-interaction --no-scripts --optimize-autoloader
-
 COPY . .
 
-RUN cp .env.example .env
+RUN composer install --no-ansi --no-interaction --no-scripts --optimize-autoloader
 
-RUN php artisan key:generate
+RUN cp .env.example .env && php artisan key:generate
 
 RUN chmod -R 777 storage bootstrap/cache
 
 EXPOSE 8000
 
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+CMD ["php-fpm"]
