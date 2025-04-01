@@ -21,13 +21,13 @@ Route::get('/auth/google/callback', function () {
         }
     Auth::login($user);
     $token = $user->createToken('api-token')->plainTextToken;
-    Session::put('auth_token', $token);
-    return redirect()->to('/');
+    // Session::put('auth_token', $token);
+    return redirect()->to("http://localhost:5174/login-success?token=$token");
 });
 
-Route::middleware(['auth', 'verified'])->get('/', function () {
-        return Inertia::render('dashboard');
-})->name('home');;
+// Route::middleware(['auth', 'verified'])->get('/', function () {
+//         return Inertia::render('dashboard');
+// })->name('home');;
 
 
 
